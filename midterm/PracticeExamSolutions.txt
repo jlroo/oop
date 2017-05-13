@@ -1,0 +1,224 @@
+Problem 1
+
+class ComplexShape implements Shape {
+
+    ArrayList shapes = new ArrayList();   // a list of shapes
+
+    /** add a shape to the composite */
+    public void addShape(Shape s) {
+        shapes.add(s);
+    }
+
+    /** draw all shapes in the composite */
+    public void draw(Color c) {
+       Iterator i = shapes.iterator(); 
+       while (i.hasNext()) {
+            ((Shape) i.next()).draw(c);
+        }
+    }
+
+    public Object clone() {
+        try {
+            ComplexShape result = (ComplexShape) super.clone();
+            // make a *deep* clone of the shapes
+            result.shapes = new ArrayList();
+            Iterator i = shapes.iterator(); 
+            while (i.hasNext()) {
+                result.shapes.add(((Shape) i.next()).clone());
+            }
+            return result;
+        } catch (CloneNotSupportedException e) {
+            throw new InternalError("this should not have happened");
+        }
+    }
+
+    public Object accept(ShapeVisitor v) { return v.visitComplexShape(this); }
+}
+
+
+Problem 2
+
+ComplexShape c = new ComplexShape();
+c.addShape(new Circle(3));
+c.addShape(new Circle(5));
+c.addShape(new Rectangle(8, 8));
+
+
+Problem 3
+
+class Translate implements Shape {
+
+    Shape sh;
+
+    int xtrans, ytrans;
+
+    public Translate(int x, int y, Shape sh) {
+        xtrans = x; ytrans = y;
+        this.sh = sh; 
+    }
+
+    public void draw(Color c) { 
+        // Hint: Move cursor by amount xtrans, ytrans; draw;
+        // and then restore the original position of cursor
+        BasicGLib.moveCursor(xtrans, ytrans);
+        sh.draw(c);
+        BasicGLib.moveCursor(-xtrans, -ytrans);
+        // 0, 0 will *not* work (not compositional)
+    }
+
+    public Object clone() {
+        try {
+            // handles xtrans, ytrans
+            Translate result = (Translate) super.clone();
+            result.sh = (Shape) sh.clone();
+            return result;
+        } catch (CloneNotSupportedException e) {
+            throw new InternalError("this should not have happened");
+        }
+    }
+
+    public Object accept(ShapeVisitor v) { return v.visitTranslate(this); }
+
+}
+
+
+Problem 4
+
+Shape s1 = new Circle(3);
+Shape s2 = new Translate(3, 4, new Circle(5));
+Shape s3 = new Translate(8, 9, new Circle(3));
+Shape s4 = new Translate(10, 12, new Circle(5));
+
+ComplexShape inner = new ComplexShape();
+inner.addShape(s3);
+inner.addShape(s4);
+
+ComplexShape outer = new ComplexShape();
+outer.addShape(s1);
+outer.addShape(s2);
+outer.addShape(inner);
+
+
+Problem 5
+
+class PrintVisitor implements ShapeVisitor {
+
+    // This PrintVisitor does not handle indentation!
+    // Indentation is left as an exercise to the reader.
+
+    private static final String lineSeparator = System.getProperty("line.separator");
+
+    public Object visitCircle(Circle c) {
+        StringBuffer buffer = new StringBuffer();
+        buffer.append("Circle(");
+        buffer.append(c.r);
+        buffer.append(")");
+        return buffer.toString();
+    }
+
+    public Object visitRectangle( Rectangle r) {
+        StringBuffer buffer = new StringBuffer();
+        buffer.append("Rectangle(");
+        buffer.append(r.xl);
+        buffer.append(", ");
+        buffer.append(r.yl);
+        buffer.append(")");
+        return buffer.toString();
+    }
+
+    public Object visitComplexShape(ComplexShape c) {
+        StringBuffer buffer = new StringBuffer();
+        buffer.append("ComplexShape(");
+        Iterator i = c.shapes.iterator();
+        if (i.hasNext()) {
+            buffer.append(lineSeparator);
+            buffer.append(((Shape) i.next()).accept(this));
+        }
+        while (i.hasNext()) {
+            buffer.append(",");
+            buffer.append(lineSeparator);
+            buffer.append(((Shape) i.next()).accept(this));
+        }
+        if (! c.shapes.isEmpty()) {
+            buffer.append(lineSeparator);
+        }
+        buffer.append(")");
+        return buffer.toString();
+    }
+
+    public Object visitTranslate(Translate t) {
+        StringBuffer buffer = new StringBuffer();
+        buffer.append("Translate(");
+	buffer.append(t.xtrans);
+	buffer.append(", ");
+	buffer.append(t.ytrans);
+	buffer.append(", ");
+        buffer.append(lineSeparator);
+        buffer.append(t.sh.accept(this));
+        buffer.append(lineSeparator);
+        buffer.append(")");
+        return buffer.toString();
+    }
+}
+
+
+Problem 6
+
+class BBoxVisitor implements ShapeVisitor {
+
+    public Object visitCircle(Circle c) {
+        return new BBox(-c.r, +c.r, -c.r, +c.r);
+    }
+
+    public Object visitRectangle( Rectangle r) {
+        return new BBox(0, r.xl, 0, r.yl);
+    }
+
+    public Object visitComplexShape(ComplexShape c) {
+        int xl = Integer.MAX_VALUE;
+        int xr = Integer.MIN_VALUE;
+        int yd = Integer.MAX_VALUE;
+        int yu = Integer.MIN_VALUE;
+        Iterator i = c.shapes.iterator();
+        while (i.hasNext()) {
+            BBox bbox = (BBox) ((Shape) i.next()).accept(this);
+            xl = Math.min(xl, bbox.xleft);
+            xr = Math.max(xr, bbox.xright);
+            yd = Math.min(yd, bbox.ydown);
+            yu = Math.max(yu, bbox.yup);
+        }
+        return new BBox(xl, xr, yd, yu);
+    }
+
+    public Object visitTranslate(Translate t) {
+        BBox bbox = (BBox) t.sh.accept(this);
+        return new BBox(
+            bbox.xleft + t.xtrans, 
+            bbox.xright + t.xtrans, 
+            bbox.xdown + t.ytrans, 
+            bbox.xup + t.ytrans
+        );
+    }
+}
+
+
+Problem 7
+
+// version one
+void renderShape(Shape sh, Color back, Color fore) {
+    BBox bbox = sh.accept(new BBoxVisitor());
+    BasicGLib.moveCursor(bbox.xleft, bbox.ydown);
+    BasicGLib.drawRectangle(
+        back, bbox.xright - bbox.xleft, bbox.yup - bbox.ydown);
+    BasicGLib.moveCursor(-bbox.xleft, -bbox.ydown);
+    sh.draw(fore);
+}
+
+// version two
+void renderShape(Shape sh, Color back, Color fore) {
+    BBox bbox = sh.accept(new BBoxVisitor());
+    new Translate(bbox.xleft, bbox.ydown, 
+        new Rectangle(bbox.xright - bbox.xleft, bbox.yup - bbox.ydown))
+           .draw(back);
+    sh.draw(fore);
+}

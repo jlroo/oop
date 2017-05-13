@@ -1,0 +1,28 @@
+## New bitbucket Repo
+
+## To create a new bitbucket repo using BASH
+## use the following curl command
+
+curl -X POST -v -u jrodriguezorjuela@luc.edu -H "Content-Type: application/json" \
+  https://api.bitbucket.org/2.0/repositories/jrodriguezorjuela/NEW_REPO \
+  -d '{"scm": "git", "is_private": "true", "fork_policy": "no_public_forks" }'
+
+## Set new master remote
+
+git remote set-url origin https://jrodriguezorjuela@bitbucket.org/jrodriguezorjuela/NEW_REPO.git
+
+## Check if the new master is correct 
+git remote -v
+
+## First Push
+
+git push --mirror git@bitbucket.org:jrodriguezorjuela/NEW_REPO.git
+
+## Add, Commit and Push
+
+git add --all
+git commit -m "update code"
+git push origin master
+
+
+

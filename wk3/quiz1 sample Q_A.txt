@@ -1,0 +1,21 @@
+Quiz 1 sample Q&A
+
+SE 1 - Patterns
+
+1. The top 3 pattern examples mentioned early in the podcast are (circle exactly 3):
+	Visitor		Proxy		Builder		Reactor		Observer	Singleton
+Answers:		Proxy					Reactor		Observer
+	
+2. What do "Alexandrian" patterns relate to? Choose exactly one:
+	Organizations	Technical Issues	Teaching	Building Architecture	Documentation
+Answer:												Building Architecture
+
+3. As of the date of the podcast (January, 2006), how many books on patterns were there?
+	10-20	50-70	90-120	200-300	>500
+Answer:		50-70
+
+SE 2 - Dependencies and Dependency Injection
+
+1. Which of these are good criteria for a dependency injection system?
+	Implicit declaration	Restricted access	Availability	Magic
+Answer:						Restricted access	Availability

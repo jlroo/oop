@@ -1,0 +1,11 @@
+Test 2 Topics:
+
+Java Interfaces, implementing classes, abstract classes, and polymorphism
+Design Patterns: Decorator, Composite, Strategy, Visitor, etc.
+The overall design of Project 3 (not its details)
+One question from Test 1, either a duplicate or a very similar one
+
+Test 2 will be a 90 minute in-class test during Week 11 this semester -
+Week 10 class is cancelled due to the Science Days presentation conflict.
+
+Try the practice exam on your own before you look at the supplied answers!

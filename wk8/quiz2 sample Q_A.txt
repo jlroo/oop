@@ -1,0 +1,29 @@
+Quiz 2 sample Q&A
+
+SE 167 - Unit Testing
+
+1. True or false: Although there are tools like JUnit to support unit testing, the Java
+   compiler can’t help with managing and running tests.
+Answer: False - by using annotations, JUnit uses a compiler-supported domain-specific language
+	
+2. What is a reasonable expected range of size of test code to product code?
+	1-2X	2-5X	5-10X	10-20X
+Answer: 	2-5X (5X for very complicated software)
+
+3. True or false: With all the IDE and compiler support for unit testing, we’ve gotten to the
+   point where we’re writing too many tests.
+Answer: False - we’re not there yet!
+
+SE 46 - Refactoring
+
+1. Code smells are all about: (circle exactly two)
+		Ugly designs	Unmaintainable software		Old legacy code		Broken code
+Answer: Ugly designs	Unmaintainable software
+
+2. True or false: Similar to finding design patterns, knowing when code is "smelly" depends on
+   experience, soft "know-how", and code reading.
+Answer: True - you can't define code smells in the abstract or from first principles.
+
+3. True or false: Modern IDE refactoring tools can be trusted even in advanced cases like
+   extracting methods or changing method signatures, and can guarantee no behavior changes.
+Answer: False - they can only be trusted for simple refactoring cases (but they help!).
